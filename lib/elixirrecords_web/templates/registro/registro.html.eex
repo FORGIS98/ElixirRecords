@@ -1,0 +1,13 @@
+<%= form_for @conn, Routes.registro_path(@conn, :registro), fn f -> %>
+  <fieldset>
+    <%= label f, :username, "Username" %>
+    <%= text_input f, :username, placeholder: "Choose your username!" %>
+    <p class="alert alert-info"><%= get_flash(@conn, :usernameError) %></p>
+    <%= label f, :password, "Password" %>
+    <%= password_input f, :password, placeholder: "* * * * * * * *" %>
+    <%= label f, :repassword, "Retype password" %>
+    <%= password_input f, :repassword, placeholder: "* * * * * * * *" %>
+    <%= submit "OK", class: "button button-primary float-right" %>
+    <p class="alert alert-info"><%= get_flash(@conn, :passwordError) %></p>
+  </fieldset>
+<% end %>
