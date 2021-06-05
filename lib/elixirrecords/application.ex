@@ -14,9 +14,10 @@ defmodule Elixirrecords.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: Elixirrecords.PubSub},
       # Start the Endpoint (http/https)
-      ElixirrecordsWeb.Endpoint
+      ElixirrecordsWeb.Endpoint,
       # Start a worker by calling: Elixirrecords.Worker.start_link(arg)
       # {Elixirrecords.Worker, arg}
+      {Elixirrecords.Server, "http://localhost:22000"}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

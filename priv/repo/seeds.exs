@@ -9,3 +9,11 @@
 #
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
+
+alias Elixirrecords.Repo
+alias Elixirrecords.{Usuario}
+
+jorge = %Usuario{correo: "jorge@correo.com", nombre: "Jorge"} 
+        |> Repo.insert!()
+paula = %Usuario{correo: "paula@correo.com", nombre: "Paula"}
+        |> Repo.insert!()
