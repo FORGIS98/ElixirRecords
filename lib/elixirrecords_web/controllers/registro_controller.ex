@@ -7,8 +7,7 @@ defmodule ElixirrecordsWeb.RegistroController do
   def registro(conn, params) do
 
     res = Server.sendTx(params["username"])
-    IO.puts("El usuario es: #{inspect res}")
-  
+    IO.puts("La respuesta es: #{inspect res}")
 
     # Llamar al backend (el back llama a la base de datos)
     # El backend firma y envia
