@@ -5,9 +5,18 @@ defmodule ElixirrecordsWeb.RegistroController do
   require Logger
 
   def registro(conn, params) do
-
     res = Server.sendTx(params["username"])
-    IO.puts("La respuesta es: #{inspect res}")
+    case res do
+      {val, value} ->
+        IO.puts("Val es: #{inspect val}")
+        IO.puts("Value es: #{inspect value}")
+      true ->
+        IO.puts("Respuesta: true")
+      false ->
+        IO.puts("Respuesta: false")
+      default ->
+        IO.puts("Respuesta: #{inspect default}")
+    end
 
     # Llamar al backend (el back llama a la base de datos)
     # El backend firma y envia
