@@ -20,7 +20,7 @@ defmodule Elixirrecords.MixProject do
   def application do
     [
       mod: {Elixirrecords.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :ethereumex, :exw3]
     ]
   end
 
@@ -44,7 +44,11 @@ defmodule Elixirrecords.MixProject do
       {:telemetry_poller, "~> 0.4"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:ethereumex, "~> 0.7.0"},
+      # {:ex_abi, "~> 0.5.2"} # Esto lib funciona bien
+      {:exw3, "~> 0.5"}
+
     ]
   end
 
