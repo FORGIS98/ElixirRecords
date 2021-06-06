@@ -35,3 +35,5 @@ npm-debug.log
 
 # To avoid uploading IP address
 config/dev.exs
+
+/priv/solidity/wallet

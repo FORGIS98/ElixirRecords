@@ -53,15 +53,14 @@ defmodule Elixirrecords.Server do
 
         # Mandar la Tx
 
-        {:reply, true, state}
+        {:reply, {:ok, "Transacción realizada"}, state}
       
       else 
-        {:reply, "Usuario no encontrado", state}
+        {:reply, {:error, "Usuario no encontrado"}, state}
       end
 
     else 
-      {:reply, false, state}
+      {:reply, {:wait, false}, state}
     end
   end
-
 end
