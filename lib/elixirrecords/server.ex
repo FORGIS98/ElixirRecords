@@ -39,11 +39,17 @@ defmodule Elixirrecords.Server do
 
         contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
         ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-        {res, address, tx_hash} = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, from: address})
+        deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: address})
 
-        IO.puts("res: #{inspect res}")
-        IO.puts("address: #{inspect address}")
-        IO.puts("tx_hash: #{inspect tx_hash}")
+        case deployAnswer do
+          {res, address, tx_hash} ->
+            IO.puts("res: #{inspect res}")
+            IO.puts("address: #{inspect address}")
+            IO.puts("tx_hash: #{inspect tx_hash}")
+          {:error, msg} ->
+            IO.puts("msg de error: #{inspect msg}")
+        end
+
 
         # ExW3.Contract.at(:SimpleStorage, address)
         # {:ok, tx} = ExW3.Contract.send(:SimpleStorage, :set, [1], %{from: address, gas: 50_000})
