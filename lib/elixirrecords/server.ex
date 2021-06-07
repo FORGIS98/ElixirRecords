@@ -6,12 +6,20 @@ defmodule Elixirrecords.Server do
   use GenServer
 
   # API
-  def start_link(rpc) do
-    GenServer.start_link(__MODULE__, rpc, name: __MODULE__)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
   def sendTx(usuario) do
     GenServer.call(__MODULE__, {:sendTx, usuario})
+  end
+
+  def deploy() do
+    GenServer.call(__MODULE__, {:deploy})
+  end
+
+  def getEvents() do
+    GenServer.call(__MODULE__, {:getEvents})
   end
 
 
@@ -20,53 +28,73 @@ defmodule Elixirrecords.Server do
     {:ok, state}
   end
 
-
   def handle_call({:sendTx, mail}, _from, state) do
-
     # Comprobamos que se haya insertado algún correo
     if(mail != nil) do
 
       # Comprobamos que el usuario exista en la base de datos
       user = BD.get_by(Usuario, correo: mail)
-  
+
       if(user != nil) do 
+        contractAddress = "0x99e159bc670de0315ce9ab13aef158edbbb32b5e"
+        accounts = ExW3.accounts()
 
-        # Construir parametros de la Tx
-        
-        # accounts = ExW3.accounts()
-        {:ok, address} = ExW3.personal_new_account("elixir")
-        {:ok, true} = ExW3.personal_unlock_account([address, "elixir", 30], [])
-
+        # Instancia del smart contract
         contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
         ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-        deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: address})
-
-        case deployAnswer do
-          {res, address, tx_hash} ->
-            IO.puts("res: #{inspect res}")
-            IO.puts("address: #{inspect address}")
-            IO.puts("tx_hash: #{inspect tx_hash}")
-          {:error, msg} ->
-            IO.puts("msg de error: #{inspect msg}")
-        end
-
-
-        # ExW3.Contract.at(:SimpleStorage, address)
-        # {:ok, tx} = ExW3.Contract.send(:SimpleStorage, :set, [1], %{from: address, gas: 50_000})
-
-
-        # Firmal la Tx
+        ExW3.Contract.at(:ContratoAsistencia, contractAddress)
 
         # Mandar la Tx
-
-        {:reply, {:ok, "Transacción realizada"}, state}
-      
+        {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 0), gas: 50_000, gas_price: 0})
+        
+        {:reply, {:ok, "Transacción realizada", tx_hash}, state}
       else 
         {:reply, {:error, "Usuario no encontrado"}, state}
       end
-
     else 
       {:reply, {:wait, false}, state}
     end
+
+  end # END - sendTx
+
+
+  def handle_call({:deploy}, _from, state) do
+
+    accounts = ExW3.accounts()
+    contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
+    ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
+    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: Enum.at(accounts, 0)})
+
+    case deployAnswer do
+      {res, address, tx_hash} ->
+        {:reply, {res, address}, state}
+      {:error, msg} ->
+        {:reply, {:error, msg}, state}
+    end
+
   end
+
+  def handle_call({:getEvents}, _from, state) do
+    contractAddress = "0x99e159bc670de0315ce9ab13aef158edbbb32b5e"
+    accounts = ExW3.accounts()
+
+    # Instancia del smart contract
+    contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
+    ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
+    ExW3.Contract.at(:ContratoAsistencia, contractAddress)
+
+    # Abrir filtro de eventos pasados
+    {:ok, filtro} = ExW3.Contract.filter(:ContratoAsistencia, "Asistencia", %{fromBlock: 0, toBlock: "latest"})
+
+    # Recuperar lista de asistentes hasta ahora
+    {:ok, asistencias} = ExW3.Contract.get_filter_changes(filtro)
+    Enum.map(asistencias, fn x -> IO.puts("Asistencia: #{inspect x}") end)
+
+    # Cerrar filtro de eventos pasados
+    ExW3.Contract.uninstall_filter(filtro)
+
+    {:reply, {:ok, asistencias}, state}
+
+  end
+
 end

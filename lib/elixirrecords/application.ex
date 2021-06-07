@@ -17,7 +17,7 @@ defmodule Elixirrecords.Application do
       ElixirrecordsWeb.Endpoint,
       # Start a worker by calling: Elixirrecords.Worker.start_link(arg)
       # {Elixirrecords.Worker, arg}
-      {Elixirrecords.Server, "http://localhost:22000"},
+      {Elixirrecords.Server, :ok},
       ExW3.Contract
     ]
 

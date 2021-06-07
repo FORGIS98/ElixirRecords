@@ -13,7 +13,8 @@ defmodule ElixirrecordsWeb.RegistroController do
         |> render("registro.html")
       {:wait, msg} ->
         render(conn, "registro.html")
-      {:ok, msg} ->
+      {:ok, msg, tx_hash} ->
+        IO.puts("El hash es: #{inspect tx_hash}")
         render(conn, "registrado.html")
     end
     # Llamar al backend (el back llama a la base de datos)
