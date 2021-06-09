@@ -1,0 +1,8 @@
+<%= form_for @conn, Routes.registro_path(@conn, :registrarUsuario), fn f -> %>
+  <fieldset>
+    <%= label f, :email, "Correo Institucional" %>
+    <%= text_input f, :email, placeholder: "@alumnos.upm.es" %>
+    <p class="alert alert-info"><%= get_flash(@conn, :emailError) %></p>
+    <%= submit "OK", class: "button button-primary float-right" %>
+  </fieldset>
+<% end %>
