@@ -23,6 +23,7 @@ defmodule Elixirrecords.Server do
   end
 
 
+
   # GenServer Callbacks
   def init(state) do
     {:ok, state}
@@ -36,17 +37,18 @@ defmodule Elixirrecords.Server do
       user = BD.get_by(Usuario, correo: mail)
 
       if(user != nil) do 
-        contractAddress = "0x99e159bc670de0315ce9ab13aef158edbbb32b5e"
+        {contract_abi, contractAddress} = state
+        # contractAddress = "0x52cfe49ff7fbd1168014790bc05d07466daf65b8"
         accounts = ExW3.accounts()
 
         # Instancia del smart contract
-        contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
+        # contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
         ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
         ExW3.Contract.at(:ContratoAsistencia, contractAddress)
 
         # Mandar la Tx
-        {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 0), gas: 50_000, gas_price: 0})
-        
+        {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 2), gas: 32_000, gas_price: 0})
+
         {:reply, {:ok, "Transacción realizada", tx_hash}, state}
       else 
         {:reply, {:error, "Usuario no encontrado"}, state}
@@ -54,20 +56,18 @@ defmodule Elixirrecords.Server do
     else 
       {:reply, {:wait, false}, state}
     end
-
   end # END - sendTx
-
 
   def handle_call({:deploy}, _from, state) do
 
     accounts = ExW3.accounts()
     contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
     ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: Enum.at(accounts, 0)})
+    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 30_000, gas_price: 0, from: Enum.at(accounts, 0)})
 
     case deployAnswer do
       {res, address, tx_hash} ->
-        {:reply, {res, address}, state}
+        {:reply, {res, address}, {contract_abi, address}}
       {:error, msg} ->
         {:reply, {:error, msg}, state}
     end
@@ -75,7 +75,7 @@ defmodule Elixirrecords.Server do
   end
 
   def handle_call({:getEvents}, _from, state) do
-    contractAddress = "0x99e159bc670de0315ce9ab13aef158edbbb32b5e"
+    contractAddress = "0x52cfe49ff7fbd1168014790bc05d07466daf65b8"
     accounts = ExW3.accounts()
 
     # Instancia del smart contract
