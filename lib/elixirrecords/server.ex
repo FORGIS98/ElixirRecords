@@ -1,5 +1,6 @@
 defmodule Elixirrecords.Server do
   alias Elixirrecords.Usuario, as: Usuario
+
   alias Elixirrecords.Repo, as: BD
   # alias Ethereumex.HttpClient, as: Eth
   alias ExW3.Contract, as: Contract
@@ -22,11 +23,27 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:getEvents})
   end
 
+  def registrar(email, nombre) do
+    GenServer.call(__MODULE__, {:registrar, email, nombre})
+  end
 
 
   # GenServer Callbacks
   def init(state) do
     {:ok, state}
+  end
+
+  def handle_call({:registrar, email, nombre}, _from, state) do
+      # Comprobamos que el usuario exista en la base de datos
+      user = BD.get_by(Usuario, correo: email)
+      if(user == nil) do
+        %Usuario{correo: email, nombre: nombre}
+        |> BD.insert!()
+
+        {:reply, {:ok}, state}
+      else
+        {:reply, {:error, "El usuario ya existe en el sistema"}, state}
+      end
   end
 
   def handle_call({:sendTx, mail}, _from, state) do
@@ -88,4 +105,6 @@ defmodule Elixirrecords.Server do
 
     {:reply, {:ok, asistencias}, state}
   end
+
+  
 end
