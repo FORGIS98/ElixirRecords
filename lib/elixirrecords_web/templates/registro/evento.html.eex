@@ -1,8 +1,0 @@
-<%= form_for @conn, Routes.registro_path(@conn, :sendTx), fn f -> %>
-  <fieldset>
-    <%= label f, :username, "Correo" %>
-    <%= text_input f, :username, placeholder: "Escribe tu correo electrónico" %>
-    <p class="alert alert-info"><%= get_flash(@conn, :error) %></p>
-    <%= submit "Registrar", class: "button button-primary center" %>
-  </fieldset>
-<% end %>

@@ -11,6 +11,14 @@ defmodule Elixirrecords.Server do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
+  def login(email) do
+    GenServer.call(__MODULE__, {:login, email})
+  end
+
+  def registrar(email, nombre) do
+    GenServer.call(__MODULE__, {:registrar, email, nombre})
+  end
+
   def sendTx(usuario) do
     GenServer.call(__MODULE__, {:sendTx, usuario})
   end
@@ -23,14 +31,23 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:getEvents})
   end
 
-  def registrar(email, nombre) do
-    GenServer.call(__MODULE__, {:registrar, email, nombre})
-  end
-
 
   # GenServer Callbacks
   def init(state) do
     {:ok, state}
+  end
+
+  def handle_call({:login, email}, _from, state) do
+    user = BD.get_by(Usuario, correo: email)
+    if(user != nil) do
+      if(user.nombre == "Admin") do
+        {:reply, {:admin}, state}
+      else
+        {:reply, {:ok}, state}
+      end
+    else
+      {:reply, {:error, "El usuario no existe, ¡Regístrate!"}, state}
+    end
   end
 
   def handle_call({:registrar, email, nombre}, _from, state) do
@@ -47,29 +64,23 @@ defmodule Elixirrecords.Server do
   end
 
   def handle_call({:sendTx, mail}, _from, state) do
-    # Comprobamos que se haya insertado algún correo
-    if(mail != nil) do
+    # Comprobamos que el usuario exista en la base de datos
+    user = BD.get_by(Usuario, correo: mail)
 
-      # Comprobamos que el usuario exista en la base de datos
-      user = BD.get_by(Usuario, correo: mail)
+    if(user != nil) do 
+      {contract_abi, contractAddress} = state
+      accounts = ExW3.accounts()
 
-      if(user != nil) do 
-        {contract_abi, contractAddress} = state
-        accounts = ExW3.accounts()
+      # Instancia del smart contract
+      ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
+      ExW3.Contract.at(:ContratoAsistencia, contractAddress)
 
-        # Instancia del smart contract
-        ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-        ExW3.Contract.at(:ContratoAsistencia, contractAddress)
+      # Mandar la Tx
+      {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 2), gas: 32_000, gas_price: 0})
 
-        # Mandar la Tx
-        {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 2), gas: 32_000, gas_price: 0})
-
-        {:reply, {:ok, "Transacción realizada", tx_hash}, state}
-      else 
-        {:reply, {:error, "Usuario no encontrado"}, state}
-      end
+      {:reply, {:ok, "Transacción realizada", tx_hash}, state}
     else 
-      {:reply, {:wait, false}, state}
+      {:reply, {:error, "Usuario no encontrado"}, state}
     end
   end # END - sendTx
 
@@ -81,7 +92,7 @@ defmodule Elixirrecords.Server do
 
     case deployAnswer do
       {res, address, tx_hash} ->
-        {:reply, {res, address}, {contract_abi, address}}
+        {:reply, {:ok, address}, {contract_abi, address}}
       {:error, msg} ->
         {:reply, {:error, msg}, state}
     end

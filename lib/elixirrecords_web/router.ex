@@ -16,13 +16,17 @@ defmodule ElixirrecordsWeb.Router do
   scope "/", ElixirrecordsWeb do
     pipe_through :browser
 
-    get "/", PageController, :index
+    get "/", RegistroController, :login
+    post "/", RegistroController, :login
 
     get "/registro", RegistroController, :registrarUsuario
     post "/registro", RegistroController, :registrarUsuario
 
     get "/asistencia", RegistroController, :sendTx
     post "/asistencia", RegistroController, :sendTx
+
+    get "/admin", RegistroController, :deploy
+    post "/admin", RegistroController, :deploy
 
   end
 

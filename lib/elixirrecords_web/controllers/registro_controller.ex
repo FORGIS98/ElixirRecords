@@ -4,50 +4,80 @@ defmodule ElixirrecordsWeb.RegistroController do
 
   require Logger
 
+  def login(conn, params) do
+
+    if(!is_binary(params["email"])) do
+      render(conn, "login.html")
+    else
+      res = Server.login(params["email"])
+      case res do
+        {:error, msg} ->
+          conn
+          |> put_flash(:error, msg)
+          |> render("login.html")
+        {:ok} ->
+          res = Server.sendTx(params["email"])
+          
+          case res do
+            {:error, msg} ->
+              conn
+              |> put_flash(:error, msg)
+              |> render("login.html")
+            {:ok, msg, tx_hash} ->
+              conn
+              |> put_flash(:ok, "Este es el hash de tu asistencia: #{inspect tx_hash}")
+              |> render("login.html")
+          end
+        {:admin} -> 
+          conn
+          |> render("admin.html")
+      end     
+    end
+  end
 
   def registrarUsuario(conn, params) do
 
     if(!is_binary(params["email"])) do
       render(conn, "registrarUsuario.html")
     else
-      if(checkUsername(params["email"])) do
+      if(checkUsername(params["email"], params["alias"])) do
 
-        res = Server.registrar(params["email"])
+        res = Server.registrar(params["email"], params["alias"])
         case res do
           {:error, msg} ->
             conn
-            |> put_flash(:emailError, msg)
+            |> put_flash(:error, msg)
             |> render("registrarUsuario.html")
           {:ok} ->
             conn
-            |> render("evento.html")
+            |> render("login.html")
         end
 
         render(conn, "registrarUsuario.html")
       else
         conn
-        |> put_flash(:emailError, "Email no valido")
+        |> put_flash(:error, "Email o alias no valido")
         |> render("registrarUsuario.html")
       end
     end
   end
 
-  defp checkUsername(user) do
-    is_binary(user) and Regex.match?(~r/@alumnos.upm.es$/, user)
+  defp checkUsername(email, name) do
+    Regex.match?(~r/@alumnos.upm.es$/, email) and name != ""
   end
 
-  def sendTx(conn, params) do
-    res = Server.sendTx(params["username"])
+  def deploy(conn, params) do
+    res = Server.deploy()
+
     case res do
       {:error, msg} ->
         conn
         |> put_flash(:error, msg)
-        |> render("evento.html")
-      {:wait, msg} ->
-        render(conn, "evento.html")
-      {:ok, msg, tx_hash} ->
-        IO.puts("El hash es: #{inspect tx_hash}")
-        render(conn, "registrado.html")
+        |> render("admin.html")
+      {:ok, address} ->
+        conn
+        |> put_flash(:ok, "El address del contrato desplegado es: #{inspect address}")
+        |> render("admin.html")
     end
   end
 

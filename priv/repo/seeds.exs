@@ -13,7 +13,6 @@
 alias Elixirrecords.Repo
 alias Elixirrecords.{Usuario}
 
-jorge = %Usuario{correo: "jorge@correo.com", nombre: "Jorge"} 
-        |> Repo.insert!()
-paula = %Usuario{correo: "paula@correo.com", nombre: "Paula"}
-        |> Repo.insert!()
+%Usuario{correo: "jorge@alumnos.upm.es", nombre: "Jorge"} |> Repo.insert!()
+%Usuario{correo: "paula@alumnos.upm.es", nombre: "Paula"} |> Repo.insert!()
+%Usuario{correo: "admin@correo.com", nombre: "Admin"} |> Repo.insert!()
