@@ -38,11 +38,9 @@ defmodule Elixirrecords.Server do
 
       if(user != nil) do 
         {contract_abi, contractAddress} = state
-        # contractAddress = "0x52cfe49ff7fbd1168014790bc05d07466daf65b8"
         accounts = ExW3.accounts()
 
         # Instancia del smart contract
-        # contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
         ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
         ExW3.Contract.at(:ContratoAsistencia, contractAddress)
 
@@ -59,11 +57,10 @@ defmodule Elixirrecords.Server do
   end # END - sendTx
 
   def handle_call({:deploy}, _from, state) do
-
     accounts = ExW3.accounts()
     contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
     ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 30_000, gas_price: 0, from: Enum.at(accounts, 0)})
+    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: Enum.at(accounts, 0)})
 
     case deployAnswer do
       {res, address, tx_hash} ->
@@ -71,15 +68,12 @@ defmodule Elixirrecords.Server do
       {:error, msg} ->
         {:reply, {:error, msg}, state}
     end
-
   end
 
   def handle_call({:getEvents}, _from, state) do
-    contractAddress = "0x52cfe49ff7fbd1168014790bc05d07466daf65b8"
-    accounts = ExW3.accounts()
+    {contract_abi, contractAddress} = state
 
     # Instancia del smart contract
-    contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
     ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
     ExW3.Contract.at(:ContratoAsistencia, contractAddress)
 
@@ -88,13 +82,10 @@ defmodule Elixirrecords.Server do
 
     # Recuperar lista de asistentes hasta ahora
     {:ok, asistencias} = ExW3.Contract.get_filter_changes(filtro)
-    Enum.map(asistencias, fn x -> IO.puts("Asistencia: #{inspect x}") end)
 
     # Cerrar filtro de eventos pasados
     ExW3.Contract.uninstall_filter(filtro)
 
     {:reply, {:ok, asistencias}, state}
-
   end
-
 end
