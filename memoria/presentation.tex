@@ -1,36 +1,6 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Focus Beamer Presentation
-% LaTeX Template
-% Version 1.0 (8/8/18)
-%
-% This template has been downloaded from:
-% http://www.LaTeXTemplates.com
-%
-% Original author:
-% Pasquale Africa (https://github.com/elauksap/focus-beamertheme) with modifications by 
-% Vel (vel@LaTeXTemplates.com)
-%
-% Template license:
-% GNU GPL v3.0 License
-%
-% Important note:
-% The bibliography/references need to be compiled with bibtex.
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%----------------------------------------------------------------------------------------
-%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
-%----------------------------------------------------------------------------------------
-
 \documentclass{beamer}
 
-\usetheme{focus} % Use the Focus theme supplied with the template
-% Add option [numbering=none] to disable the footer progress bar
-% Add option [numbering=fullbar] to show the footer progress bar as always full with a slide count
-
-% Uncomment to enable the ice-blue theme
-%\definecolor{main}{RGB}{92, 138, 168}
-%\definecolor{background}{RGB}{240, 247, 255}
+\usetheme{focus}
 
 %------------------------------------------------
 
@@ -38,10 +8,6 @@
 \usepackage{longtable}
 \usepackage{multirow}
 \usepackage{colortbl}
-
-%----------------------------------------------------------------------------------------
-%	 TITLE SLIDE
-%----------------------------------------------------------------------------------------
 
 \title{Elixir Records}
 
@@ -55,40 +21,26 @@
 
 \titlegraphic{\includegraphics[scale=0.20]{Images/elixir.png}}
 
-%------------------------------------------------
-
 \begin{document}
 
 %------------------------------------------------
 
 \begin{frame}
-	\maketitle % Automatically created using the information in the commands above
+	\maketitle
 \end{frame}
-
-% Decisiones principales
-%   Que hemos implementade, y "arquitectura" bdd y blockchain
-% Dificultades encontradas
-%   libreria ABI y Blockchain da error, la de herranz también
-%   arrancar el GenServer
-%   quorum no mola
-% Herramientas utilizadas
-%   exw3 para hacer llamadas
-%   dificultad al recuperar eventos
-%   o cualquier valor del smart contract, falta madurez de las librerias para esta tecnología
-
 
 %------------------------------------------------
 
-\begin{frame}{¿Qué es Elixir Records?}
-	\begin{block}{Objetivo}
-		Aplicacion web para registrar la asistencia de usuarios a eventos.
+\begin{frame}{¿What is Elixir Records?}
+	\begin{block}{Objective}
+    Web application to register users assistance to events.
 	\end{block}
   \begin{center}
   \includegraphics[scale=0.5]{Images/logo.png}
   \end{center}
 \end{frame}
 
-\begin{frame}{Arquitectura del Proyecto}
+\begin{frame}{Project Architecture}
   \begin{center}
   \includegraphics[scale=0.5]{Images/arquitectura.png}
   \end{center}
@@ -115,35 +67,35 @@
 
 %------------------------------------------------
 
-\begin{frame}{Herramientas Utilizadas}
+\begin{frame}{Tools}
   \begin{itemize}
-    \item \textbf{Ecto}: Comunicación con la base de datos \textit{Postgresql}.
-    \item \textbf{Exw3}: Comunicación con la red blockchain de \textit{Ganache}.
-    \item \textbf{GenServer}: Comunicación entre el cliente y los distintos servicios.
-    \item \textbf{Milligram}: Para el \textit{estilo} de la página web.
+    \item \textbf{Ecto}: Communication with the data base, \textit{Postgresql}.
+    \item \textbf{Exw3}: Communication with the blockchain network, \textit{Ganache}.
+    \item \textbf{GenServer}: Communication between the client and the different services.
+    \item \textbf{Milligram}: To improve the web page \textit{style}.
   \end{itemize}
 \end{frame}
 
-\begin{frame}{Librería Exw3}
-	\begin{exampleblock}{\small Pros}
+\begin{frame}{Exw3 Library}
+	\begin{exampleblock}{\scriptsize Advantages}
     \begin{itemize}
-      \item {\small Permite las funcionalidades básicas}
+      \item {\footnotesize Allows basic functionalities.}
         \begin{itemize}
-          \item {\small Desplegar Smart Contracts}
-          \item {\small Crear usuarios}
-          \item {\small Interactuar con el Smart Contract}
-          \item {\small Mandar Transacciones}
+          \item {\footnotesize Deploys Smart Contracts.}
+          \item {\footnotesize Creates new users.}
+          \item {\footnotesize Interacts with Smart Contract.}
+          \item {\footnotesize Sends transactions.}
         \end{itemize}
-      \item {\small Fácil de utilizar}
-      \item {\small Trae las dependencias necesarias de facto}
+      \item {\footnotesize Easy to use.}
+      \item {\footnotesize Brings all the necessary dependencies by default.}
     \end{itemize}
 	\end{exampleblock}
-	\begin{alertblock}{\small Contras}
+	\begin{alertblock}{\scriptsize Disadvantages}
     \begin{itemize}
-      \item {\small Falta de documentación}
-      \item {\small Funciones implementadas que aparentemente no funcionan}
-      \item {\small Solo compatible con redes de Ethereum}
-      \item {\small Parece imposible recuperar eventos}
+      \item {\footnotesize Lack of documentation.}
+      \item {\footnotesize Some methods are implemented but doesn't seem to work.}
+      \item {\footnotesize Only compatible with Ethereum networks, like Ganache.}
+      \item {\footnotesize It seems impossible to recover blockchain events.}
     \end{itemize}
 	\end{alertblock}
 \end{frame}

@@ -1,20 +1,9 @@
-# ElixirRecords
-
-To start your Phoenix server:
-
+# Steps to Run the Application
   * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
+  * Create and migrate your database with `mix ecto.setup` (check ./config/dev.exs for database name and password if needed)
   * Install Node.js dependencies with `npm install` inside the `assets` directory
+  * `mix run priv/repo/seeds.exs` to load 3 names (one of them, `admin` is required lated)
+  * Start ganache-cli in another terminal `ganache-cli`
   * Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
-
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
-
-## Learn more
-
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+  * Enter `admin@corre.com` and click `Assitance` to deploy the Smart Contract
+  * Then go back to main page and enjoy :3

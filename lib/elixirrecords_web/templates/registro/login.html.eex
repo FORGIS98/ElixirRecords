@@ -1,11 +1,11 @@
 <%= form_for @conn, Routes.registro_path(@conn, :login), fn f -> %>
   <fieldset>
-    <%= label f, :email, "Correo Institucional" %>
+    <%= label f, :email, "Institute email" %>
     <%= text_input f, :email, placeholder: "@alumnos.upm.es" %>
-    <%= submit "Login", class: "button button-primary center", style: "background-color: #674ea7; border-color: #674ea7;" %>
+    <%= submit "Assistance", class: "button button-primary center", style: "background-color: #674ea7; border-color: #674ea7;" %>
     <p class="alert alert-info"><%= get_flash(@conn, :ok) %></p>
     <p class="alert alert-danger"><%= get_flash(@conn, :error) %></p>
   </fieldset>
 <% end %>
 
-<a class="button button-primary center" style="background-color: #b4a7d6; border-color: #b4a7d6;" href="/registro">¡Registrate!</a>
+<a class="button button-primary center" style="background-color: #b4a7d6; border-color: #b4a7d6;" href="/registro">Sign Up!</a>

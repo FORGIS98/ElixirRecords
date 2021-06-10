@@ -25,7 +25,7 @@ defmodule ElixirrecordsWeb.RegistroController do
               |> render("login.html")
             {:ok, msg, tx_hash} ->
               conn
-              |> put_flash(:ok, "Este es el hash de tu asistencia: #{inspect tx_hash}")
+              |> put_flash(:ok, "This is your assistance hash: #{inspect tx_hash}")
               |> render("login.html")
           end
         {:admin} -> 
@@ -36,7 +36,6 @@ defmodule ElixirrecordsWeb.RegistroController do
   end
 
   def registrarUsuario(conn, params) do
-
     if(!is_binary(params["email"])) do
       render(conn, "registrarUsuario.html")
     else
@@ -56,7 +55,7 @@ defmodule ElixirrecordsWeb.RegistroController do
         render(conn, "registrarUsuario.html")
       else
         conn
-        |> put_flash(:error, "Email o alias no valido")
+        |> put_flash(:error, "Email or nickname not valid.")
         |> render("registrarUsuario.html")
       end
     end
@@ -76,7 +75,7 @@ defmodule ElixirrecordsWeb.RegistroController do
         |> render("admin.html")
       {:ok, address} ->
         conn
-        |> put_flash(:ok, "El address del contrato desplegado es: #{inspect address}")
+        |> put_flash(:ok, "The deployed smart contract address is: #{inspect address}")
         |> render("admin.html")
     end
   end
