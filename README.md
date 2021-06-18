@@ -5,5 +5,5 @@
   * `mix run priv/repo/seeds.exs` to load 3 names (one of them, `admin` is required lated)
   * Start ganache-cli in another terminal `ganache-cli`
   * Start Phoenix endpoint with `mix phx.server`
-  * Enter `admin@corre.com` and click `Assitance` to deploy the Smart Contract
+  * Enter `admin@correo.com` and click `Assitance` to deploy the Smart Contract
   * Then go back to main page and enjoy :3
