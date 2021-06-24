@@ -16,8 +16,8 @@ defmodule ElixirrecordsWeb.Router do
   scope "/", ElixirrecordsWeb do
     pipe_through :browser
 
-    get "/", RegistroController, :login
-    post "/", RegistroController, :login
+    get "/", PageController, :index
+    post "/", PageController, :login
 
     get "/registro", RegistroController, :registrarUsuario
     post "/registro", RegistroController, :registrarUsuario
@@ -27,7 +27,6 @@ defmodule ElixirrecordsWeb.Router do
 
     get "/admin", RegistroController, :deploy
     post "/admin", RegistroController, :deploy
-
   end
 
   # Other scopes may use custom stacks.
