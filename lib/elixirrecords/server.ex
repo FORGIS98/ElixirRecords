@@ -1,5 +1,6 @@
 defmodule Elixirrecords.Server do
   alias Elixirrecords.User, as: User
+  alias Elixirrecords.Event, as: Event
   alias Elixirrecords.Repo, as: DB
   use GenServer
 
@@ -12,8 +13,8 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:login, username, password})
   end
 
-  def registrar(email, nombre) do
-    GenServer.call(__MODULE__, {:registrar, email, nombre})
+  def signup(nickname, email, password) do
+    GenServer.call(__MODULE__, {:signup, nickname, email, password})
   end
 
   def sendTx(usuario) do
@@ -36,7 +37,6 @@ defmodule Elixirrecords.Server do
 
   def handle_call({:login, username, password}, _from, state) do
     user = fetch_user(username, password)
-    IO.inspect(user)
     if(user != nil) do
       if(user.nickname == "hackerman" or user.email == "hackerman@email.com") do
         {:reply, {:admin}, state}
@@ -48,22 +48,20 @@ defmodule Elixirrecords.Server do
     end
   end
 
-  def handle_call({:registrar, email, nombre}, _from, state) do
-    # Comprobamos que el usuario exista en la base de datos
-    user = DB.get_by(User, email: email)
-    if(user == nil) do
-      %User{email: email, nickname: nombre}
-      |> DB.insert!()
+  def handle_call({:signup, nickname, email, password}, _from, state) do
+    user = fetch_user(nickname)
 
-      {:reply, {:ok}, state}
-    else
-      {:reply, {:error, "User already register in the system."}, state}
+    if(user != nil) do
+      {:reply, {:error, "There is already a user with that nickname"}, state}
     end
+
+    %User{nickname: nickname, email: email, password: password} |> DB.insert!()
+    {:reply, {:ok}, state}
   end
 
   def handle_call({:sendTx, mail}, _from, state) do
     # Comprobamos que el usuario exista en la base de datos
-    user = DDB.get_by(User, email: mail)
+    user = DB.get_by(User, email: mail)
 
     if(state == nil) do
       {:reply, {:error, "Ask your admin to deploy the Smart Contract."}, state}
@@ -129,4 +127,9 @@ defmodule Elixirrecords.Server do
       DB.get_by(User, [nickname: username, password: password])
     end
   end 
+
+  defp fetch_user(username) do
+    DB.get_by(User, nickname: username)
+  end 
+
 end

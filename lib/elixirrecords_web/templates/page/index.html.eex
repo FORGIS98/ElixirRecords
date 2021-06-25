@@ -8,7 +8,6 @@
 
     <%= submit "Login", class: "button button-primary center"%>
 
-    <p class="alert alert-info"><%= get_flash(@conn, :ok) %></p>
     <p class="alert alert-danger"><%= get_flash(@conn, :error) %></p>
   </fieldset>
 <% end %>

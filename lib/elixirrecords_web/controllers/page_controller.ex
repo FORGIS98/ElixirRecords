@@ -17,5 +17,35 @@ defmodule ElixirrecordsWeb.PageController do
       {:admin} ->
         render(conn, "admin.html")
     end
-  end # END - login
+  end 
+
+  def signUp(conn, params) do
+    if(Map.has_key?(params, "re_password")) do
+      %{"nickname" => nickname, "email" => email, "password" => pass, "re_password" => repass} = params
+      cond do
+        Regex.match?(~r/@| /, nickname) -> 
+          conn |> put_flash(:error, "Nickname not valid, @ and space are not allowed.") |> render("signup.html")
+
+        !Regex.match?(~r/@/, email) -> 
+          conn |> put_flash(:error, "Email not valid") |> render("signup.html")
+
+        String.length(pass) < 8 -> 
+          conn |> put_flash(:error, "Password min length is 8") |> render("signup.html")
+
+        pass != repass -> 
+          conn |> put_flash(:error, "Passwords don't match") |> render("signup.html")
+
+        true ->
+          res = Server.signup(nickname, email, pass)
+          case res do
+            {:error, msg} ->
+              conn |> put_flash(:error, msg) |> render("signup.html")
+            {:ok} ->
+              render(conn, "index.html")
+          end
+      end
+    else
+        render(conn, "signup.html")
+    end
+  end
 end
