@@ -35,37 +35,35 @@ defmodule Elixirrecords.Server do
   end
 
   def handle_call({:login, username, password}, _from, state) do
-    if(Regex.match?(~r/@/, username)) do
-      # Login using user email
-      user = DB.get_by(User, [email: username, password: password])
-
-      if(user != nil) do
-        if(user.nickname == "hackerman" or user.email: "hackerman@email.com") do
-          {:reply, {:admin}, state}
-        end
-          {:reply, {:ok}, state}
+    user = fetch_user(username, password)
+    IO.inspect(user)
+    if(user != nil) do
+      if(user.nickname == "hackerman" or user.email == "hackerman@email.com") do
+        {:reply, {:admin}, state}
+      else
+        {:reply, {:ok}, state}
       end
     else
       {:reply, {:error, "Ups, we can't find you :("}, state}
     end
-  end # END - login
+  end
 
   def handle_call({:registrar, email, nombre}, _from, state) do
-      # Comprobamos que el usuario exista en la base de datos
-      user = DB.get_by(User, correo: email)
-      if(user == nil) do
-        %User{correo: email, nombre: nombre}
-        |> DB.insert!()
+    # Comprobamos que el usuario exista en la base de datos
+    user = DB.get_by(User, email: email)
+    if(user == nil) do
+      %User{email: email, nickname: nombre}
+      |> DB.insert!()
 
-        {:reply, {:ok}, state}
-      else
-        {:reply, {:error, "User already register in the system."}, state}
-      end
+      {:reply, {:ok}, state}
+    else
+      {:reply, {:error, "User already register in the system."}, state}
+    end
   end
 
   def handle_call({:sendTx, mail}, _from, state) do
     # Comprobamos que el usuario exista en la base de datos
-    user = DDB.get_by(User, correo: mail)
+    user = DDB.get_by(User, email: mail)
 
     if(state == nil) do
       {:reply, {:error, "Ask your admin to deploy the Smart Contract."}, state}
@@ -121,5 +119,14 @@ defmodule Elixirrecords.Server do
     {:reply, {:ok, asistencias}, state}
   end
 
-  
+  # Private methods to support GenServer Callbacks
+  defp fetch_user(username, password) do
+    if(Regex.match?(~r/@/, username)) do
+      # Login using user email
+      DB.get_by(User, [email: username, password: password])
+    else
+      # Login using user nickname
+      DB.get_by(User, [nickname: username, password: password])
+    end
+  end 
 end

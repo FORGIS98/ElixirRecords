@@ -1,6 +1,8 @@
 defmodule ElixirrecordsWeb.PageController do
   use ElixirrecordsWeb, :controller
 
+  alias Elixirrecords.Server, as: Server
+
   def index(conn, _params) do
     render(conn, "index.html")
   end
