@@ -29,6 +29,9 @@ defmodule ElixirrecordsWeb.PageController do
         !Regex.match?(~r/@/, email) -> 
           conn |> put_flash(:error, "Email not valid") |> render("signup.html")
 
+        String.length(pass) < 8 -> 
+          conn |> put_flash(:error, "Password min length is 8") |> render("signup.html")
+
         pass != repass -> 
           conn |> put_flash(:error, "Passwords don't match") |> render("signup.html")
 
