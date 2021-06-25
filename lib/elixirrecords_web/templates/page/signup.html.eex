@@ -1,0 +1,19 @@
+<%= form_for @conn, Routes.page_path(@conn, :signUp), fn f -> %>
+  <fieldset>
+    <%= label f, :nickname, "Nickname" %>
+    <%= text_input f, :nickname, placeholder: "Sirius_Black" %>
+
+    <%= label f, :email, "Email address" %>
+    <%= text_input f, :email, placeholder: "email@example.com" %>
+
+    <%= label f, :password, "Password" %>
+    <%= password_input f, :password, placeholder: "* * * * * * * *" %>
+
+    <%= label f, :re_password, "Retype Password" %>
+    <%= password_input f, :re_password, placeholder: "* * * * * * * *" %>
+
+    <%= submit "Sign Me Up!", class: "button button-primary center"%>
+
+    <p class="alert alert-danger"><%= get_flash(@conn, :error) %></p>
+  </fieldset>
+<% end %>

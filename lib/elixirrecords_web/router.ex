@@ -19,6 +19,9 @@ defmodule ElixirrecordsWeb.Router do
     get "/", PageController, :index
     post "/", PageController, :login
 
+    get "/sign-up", PageController, :signUp
+    post "/sign-up", PageController, :signUp
+
     get "/registro", RegistroController, :registrarUsuario
     post "/registro", RegistroController, :registrarUsuario
 
