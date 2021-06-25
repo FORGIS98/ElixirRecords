@@ -1,6 +1,6 @@
 defmodule Elixirrecords.Server do
-  alias Elixirrecords.Usuario, as: Usuario
-  alias Elixirrecords.Repo, as: BD
+  alias Elixirrecords.User, as: User
+  alias Elixirrecords.Repo, as: DB
   use GenServer
 
   # API
@@ -8,8 +8,8 @@ defmodule Elixirrecords.Server do
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
   end
 
-  def login(email) do
-    GenServer.call(__MODULE__, {:login, email})
+  def login(username, password) do
+    GenServer.call(__MODULE__, {:login, username, password})
   end
 
   def registrar(email, nombre) do
@@ -34,35 +34,36 @@ defmodule Elixirrecords.Server do
     {:ok, nil}
   end
 
-  def handle_call({:login, email}, _from, state) do
-    user = BD.get_by(Usuario, correo: email)
+  def handle_call({:login, username, password}, _from, state) do
+    user = fetch_user(username, password)
+    IO.inspect(user)
     if(user != nil) do
-      if(user.nombre == "Admin") do
+      if(user.nickname == "hackerman" or user.email == "hackerman@email.com") do
         {:reply, {:admin}, state}
       else
         {:reply, {:ok}, state}
       end
     else
-      {:reply, {:error, "User not found, Sign Up!"}, state}
+      {:reply, {:error, "Ups, we can't find you :("}, state}
     end
   end
 
   def handle_call({:registrar, email, nombre}, _from, state) do
-      # Comprobamos que el usuario exista en la base de datos
-      user = BD.get_by(Usuario, correo: email)
-      if(user == nil) do
-        %Usuario{correo: email, nombre: nombre}
-        |> BD.insert!()
+    # Comprobamos que el usuario exista en la base de datos
+    user = DB.get_by(User, email: email)
+    if(user == nil) do
+      %User{email: email, nickname: nombre}
+      |> DB.insert!()
 
-        {:reply, {:ok}, state}
-      else
-        {:reply, {:error, "User already register in the system."}, state}
-      end
+      {:reply, {:ok}, state}
+    else
+      {:reply, {:error, "User already register in the system."}, state}
+    end
   end
 
   def handle_call({:sendTx, mail}, _from, state) do
     # Comprobamos que el usuario exista en la base de datos
-    user = BD.get_by(Usuario, correo: mail)
+    user = DDB.get_by(User, email: mail)
 
     if(state == nil) do
       {:reply, {:error, "Ask your admin to deploy the Smart Contract."}, state}
@@ -118,5 +119,14 @@ defmodule Elixirrecords.Server do
     {:reply, {:ok, asistencias}, state}
   end
 
-  
+  # Private methods to support GenServer Callbacks
+  defp fetch_user(username, password) do
+    if(Regex.match?(~r/@/, username)) do
+      # Login using user email
+      DB.get_by(User, [email: username, password: password])
+    else
+      # Login using user nickname
+      DB.get_by(User, [nickname: username, password: password])
+    end
+  end 
 end

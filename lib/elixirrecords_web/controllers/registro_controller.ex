@@ -5,7 +5,6 @@ defmodule ElixirrecordsWeb.RegistroController do
   require Logger
 
   def login(conn, params) do
-
     if(!is_binary(params["email"])) do
       render(conn, "login.html")
     else

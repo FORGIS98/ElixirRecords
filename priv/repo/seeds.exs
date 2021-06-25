@@ -14,7 +14,7 @@ alias Elixirrecords.Repo
 alias Elixirrecords.{User, Event}
 
 %User{nickname: "aragon", email: "aragon@email.com", password: "aragon"} |> Repo.insert!()
-%User{nickname: "biblo", email: "biblo@email.com", password: "biblo"} |> Repo.insert!()
+%User{nickname: "bilbo", email: "bilbo@email.com", password: "bilbo"} |> Repo.insert!()
 %User{nickname: "gandalf", email: "gandalf@email.com", password: "gandalf"} |> Repo.insert!()
 %User{nickname: "hackerman", email: "hackerman@email.com", password: "theH4ackerm4n"} |> Repo.insert!()
 
