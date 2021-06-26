@@ -13,7 +13,7 @@ defmodule ElixirrecordsWeb.PageController do
       {:error, msg} ->
         conn |> put_flash(:error, msg) |> render("index.html")
       {:ok} ->
-        render(conn, "events.html")
+        events(conn, nil)
       {:admin} ->
         render(conn, "admin.html")
     end
@@ -48,4 +48,20 @@ defmodule ElixirrecordsWeb.PageController do
         render(conn, "signup.html")
     end
   end
+
+  def events(conn, params) do
+    res = Server.getEvents()
+    case res do 
+      {:error, msg} ->
+        conn |> put_flash(:error, msg) |> render("index.html")
+      {:ok, events} ->
+        render(conn, "events.html", events: events)
+    end
+  end
+
+  def saveAssistance(conn, params) do
+    IO.inspect(params)
+    events(conn, params)
+  end
+
 end

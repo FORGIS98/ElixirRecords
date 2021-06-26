@@ -1,0 +1,27 @@
+<div>
+  <table>
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= for event <- @events do %>
+        <tr>
+          <td><%= event.name %></td>
+          <td><%= event.description %></td>
+          <td>
+            <%= form_for @conn, Routes.page_path(@conn, :saveAssistance), fn f -> %>
+                <%= hidden_input f, :eventName, value: event.name %>
+                <%= submit "Assist", class: "button button-primary center"%>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+
