@@ -17,6 +17,10 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:signup, nickname, email, password})
   end
 
+  def getEvents() do
+    GenServer.call(__MODULE__, {:getEvents})
+  end
+
   def sendTx(usuario) do
     GenServer.call(__MODULE__, {:sendTx, usuario})
   end
@@ -25,8 +29,8 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:deploy})
   end
 
-  def getEvents() do
-    GenServer.call(__MODULE__, {:getEvents})
+  def getAssistances() do
+    GenServer.call(__MODULE__, {:getAssistances})
   end
 
 
@@ -59,8 +63,16 @@ defmodule Elixirrecords.Server do
     {:reply, {:ok}, state}
   end
 
+  def handle_call({:getEvents}, _from, state) do
+    all_events = DB.all(Event)
+    if(all_events != nil) do
+      {:reply, {:ok, all_events}, state}
+    else
+      {:reply, {:error, "There are no events available now, try in the future."}, state}
+    end
+  end
+
   def handle_call({:sendTx, mail}, _from, state) do
-    # Comprobamos que el usuario exista en la base de datos
     user = DB.get_by(User, email: mail)
 
     if(state == nil) do
@@ -82,7 +94,7 @@ defmodule Elixirrecords.Server do
         {:reply, {:error, "User not found"}, state}
       end
     end
-  end # END - sendTx
+  end
 
   def handle_call({:deploy}, _from, state) do
     accounts = ExW3.accounts()
@@ -98,7 +110,7 @@ defmodule Elixirrecords.Server do
     end
   end
 
-  def handle_call({:getEvents}, _from, state) do
+  def handle_call({:getAssistances}, _from, state) do
     {contract_abi, contractAddress} = state
 
     # Instancia del smart contract
@@ -131,5 +143,4 @@ defmodule Elixirrecords.Server do
   defp fetch_user(username) do
     DB.get_by(User, nickname: username)
   end 
-
 end
