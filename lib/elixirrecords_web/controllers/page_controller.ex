@@ -60,7 +60,9 @@ defmodule ElixirrecordsWeb.PageController do
   end
 
   def saveAssistance(conn, params) do
-    IO.inspect(params)
+    res = Server.sendTx(params["eventName"], "gandalf") # Hardcoded user
+
+    # TODO render a popup with a "OK", or some feedback
     events(conn, params)
   end
 

@@ -21,8 +21,8 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:getEvents})
   end
 
-  def sendTx(usuario) do
-    GenServer.call(__MODULE__, {:sendTx, usuario})
+  def sendTx(eventName, user) do
+    GenServer.call(__MODULE__, {:sendTx, eventName, user})
   end
 
   def deploy() do
@@ -72,8 +72,8 @@ defmodule Elixirrecords.Server do
     end
   end
 
-  def handle_call({:sendTx, mail}, _from, state) do
-    user = DB.get_by(User, email: mail)
+  def handle_call({:sendTx, eventName, username}, _from, state) do
+    user = fetch_user(username)
 
     if(state == nil) do
       {:reply, {:error, "Ask your admin to deploy the Smart Contract."}, state}
@@ -129,7 +129,8 @@ defmodule Elixirrecords.Server do
     {:reply, {:ok, asistencias}, state}
   end
 
-  # Private methods to support GenServer Callbacks
+  ### Private methods to support GenServer Callbacks
+  
   defp fetch_user(username, password) do
     if(Regex.match?(~r/@/, username)) do
       # Login using user email
