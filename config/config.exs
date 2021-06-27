@@ -31,5 +31,4 @@ config :phoenix, :json_library, Jason
 import_config "#{Mix.env()}.exs"
 
 config :ethereumex,
-  # url: "http://138.100.10.226:22000"
   url: "localhost:8545"
