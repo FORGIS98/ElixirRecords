@@ -21,8 +21,8 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:getEvents})
   end
 
-  def sendTx(eventName, user) do
-    GenServer.call(__MODULE__, {:sendTx, eventName, user})
+  def sendTx(eventName, username) do
+    GenServer.call(__MODULE__, {:sendTx, eventName, username})
   end
 
   def deploy() do
@@ -70,6 +70,9 @@ defmodule Elixirrecords.Server do
     else
       {:reply, {:error, "There are no events available now, try in the future."}, state}
     end
+  end
+
+  def handle_call({:sendTx, eventName, username}, _from, state) do
   end
 
 #  def handle_call({:sendTx, eventName, username}, _from, state) do
