@@ -18,7 +18,6 @@ defmodule Elixirrecords.Application do
       # Start a worker by calling: Elixirrecords.Worker.start_link(arg)
       # {Elixirrecords.Worker, arg}
       {Elixirrecords.Server, :ok},
-      # ExW3.Contract
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -31,4 +31,5 @@ config :phoenix, :json_library, Jason
 import_config "#{Mix.env()}.exs"
 
 config :ethereumex,
-  url: "localhost:8545"
+  client_type: :http,
+  url: "http://localhost:8545"
