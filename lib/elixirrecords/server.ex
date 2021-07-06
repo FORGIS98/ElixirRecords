@@ -21,8 +21,8 @@ defmodule Elixirrecords.Server do
     GenServer.call(__MODULE__, {:getEvents})
   end
 
-  def sendTx(usuario) do
-    GenServer.call(__MODULE__, {:sendTx, usuario})
+  def sendTx(eventName, username) do
+    GenServer.call(__MODULE__, {:sendTx, eventName, username})
   end
 
   def deploy() do
@@ -72,36 +72,28 @@ defmodule Elixirrecords.Server do
     end
   end
 
-  def handle_call({:sendTx, mail}, _from, state) do
-    user = DB.get_by(User, email: mail)
-
+  def handle_call({:sendTx, eventName, username}, _from, state) do
     if(state == nil) do
       {:reply, {:error, "Ask your admin to deploy the Smart Contract."}, state}
     else
-      if(user != nil) do 
-        {contract_abi, contractAddress} = state
-        accounts = ExW3.accounts()
+      {contract_abi, contractAddress} = state
+      accounts = ExW3.accounts()
 
-        # Instancia del smart contract
-        ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-        ExW3.Contract.at(:ContratoAsistencia, contractAddress)
+      # Instancia del smart contract
+      ExW3.Contract.register(:AssistanceContract, abi: contract_abi)
+      ExW3.Contract.at(:AssistanceContract, contractAddress)
 
-        # Mandar la Tx
-        {:ok, tx_hash} = ExW3.Contract.send(:ContratoAsistencia, :registrarAsistencia, [mail, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 2), gas: 32_000, gas_price: 0})
-
-        {:reply, {:ok, "Transaction completed!", tx_hash}, state}
-      else 
-        {:reply, {:error, "User not found"}, state}
-      end
+      # Mandar la Tx
+      {:ok, tx_hash} = ExW3.Contract.send(:AssistanceContract, :saveAssistance, [eventName, username, to_string(DateTime.utc_now)], %{from: Enum.at(accounts, 1), gas: 50_000})
+      {:reply, {:ok, "Transaction completed!", tx_hash}, state}
     end
   end
 
   def handle_call({:deploy}, _from, state) do
     accounts = ExW3.accounts()
-    contract_abi = ExW3.Abi.load_abi("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.abi")
-    ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-    deployAnswer = ExW3.Contract.deploy(:ContratoAsistencia, bin: ExW3.Abi.load_bin("priv/solidity/ContratoAsistencias_sol_ContratoAsistencias.bin"), options: %{gas: 300_000, gas_price: 0, from: Enum.at(accounts, 0)})
-
+    contract_abi = ExW3.Abi.load_abi("priv/solidity/AssistanceContract_sol_AssistanceContract.abi")
+    ExW3.Contract.register(:AssistanceContract, abi: contract_abi)
+    deployAnswer = ExW3.Contract.deploy(:AssistanceContract, bin: ExW3.Abi.load_bin("priv/solidity/AssistanceContract_sol_AssistanceContract.bin"), options: %{gas: 300_000, gas_price: 0, from: Enum.at(accounts, 0)})
     case deployAnswer do
       {_, address, _} ->
         {:reply, {:ok, address}, {contract_abi, address}}
@@ -114,11 +106,11 @@ defmodule Elixirrecords.Server do
     {contract_abi, contractAddress} = state
 
     # Instancia del smart contract
-    ExW3.Contract.register(:ContratoAsistencia, abi: contract_abi)
-    ExW3.Contract.at(:ContratoAsistencia, contractAddress)
+    ExW3.Contract.register(:AssistanceContract, abi: contract_abi)
+    ExW3.Contract.at(:AssistanceContract, contractAddress)
 
     # Abrir filtro de eventos pasados
-    {:ok, filtro} = ExW3.Contract.filter(:ContratoAsistencia, "Asistencia", %{fromBlock: 0, toBlock: "latest"})
+    {:ok, filtro} = ExW3.Contract.filter(:AssistanceContract, "Asistencia", %{fromBlock: 0, toBlock: "latest"})
 
     # Recuperar lista de asistentes hasta ahora
     {:ok, asistencias} = ExW3.Contract.get_filter_changes(filtro)
@@ -129,7 +121,8 @@ defmodule Elixirrecords.Server do
     {:reply, {:ok, asistencias}, state}
   end
 
-  # Private methods to support GenServer Callbacks
+
+  ### Private methods to support GenServer Callbacks
   defp fetch_user(username, password) do
     if(Regex.match?(~r/@/, username)) do
       # Login using user email
