@@ -60,8 +60,11 @@ defmodule ElixirrecordsWeb.PageController do
   end
 
   def saveAssistance(conn, params) do
+    # TODO: This goes with admin
+    Server.deploy()
     # TODO: Use browser cookies to know who is login
     res = Server.sendTx(params["eventName"], "gandalf") # Hardcoded user
+
 
     # TODO: render a popup with a "OK", or some feedback
     events(conn, params)
