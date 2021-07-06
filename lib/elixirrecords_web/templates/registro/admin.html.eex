@@ -1,7 +1,0 @@
-<%= form_for @conn, Routes.registro_path(@conn, :deploy), fn f -> %>
-  <fieldset>
-    <%= submit "Deploy Smart Contract", class: "button button-primary center", style: "background-color: #674ea7; border-color: #674ea7;" %>
-    <p class="alert alert-info"><%= get_flash(@conn, :ok) %></p>
-    <p class="alert alert-danger"><%= get_flash(@conn, :error) %></p>
-  </fieldset>
-<% end %>
