@@ -69,5 +69,4 @@ defmodule ElixirrecordsWeb.PageController do
     # TODO: render a popup with a "OK", or some feedback
     events(conn, params)
   end
-
 end
