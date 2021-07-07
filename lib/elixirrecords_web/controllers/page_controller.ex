@@ -13,9 +13,11 @@ defmodule ElixirrecordsWeb.PageController do
       {:error, msg} ->
         conn |> put_flash(:error, msg) |> render("index.html")
       {:ok} ->
-        events(conn, nil)
+        put_session(conn, :user_logged_in, params["username"])
+        |> events(nil)
       {:admin} ->
-        render(conn, "admin.html")
+        put_session(conn, :user_logged_in, "admin")
+        |> events(nil)
     end
   end 
 
@@ -61,10 +63,8 @@ defmodule ElixirrecordsWeb.PageController do
 
   def saveAssistance(conn, params) do
     # TODO: This goes with admin
-    Server.deploy()
-    # TODO: Use browser cookies to know who is login
-    res = Server.sendTx(params["eventName"], "gandalf") # Hardcoded user
-
+    # Server.deploy()
+    res = Server.sendTx(params["eventName"], get_session(conn, :user_logged_in))
 
     # TODO: render a popup with a "OK", or some feedback
     events(conn, params)
