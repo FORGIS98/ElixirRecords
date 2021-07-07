@@ -23,6 +23,9 @@ defmodule ElixirrecordsWeb.Router do
     post "/sign-up", PageController, :signUp
 
     post "/save-assistance", PageController, :saveAssistance
+
+    get "/deploy-contract", PageController, :deployContract
+    get "/logout", PageController, :logout
   end
 
   # Other scopes may use custom stacks.
