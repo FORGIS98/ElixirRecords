@@ -42,7 +42,7 @@ defmodule Elixirrecords.Server do
   def handle_call({:login, username, password}, _from, state) do
     user = fetch_user(username, password)
     if(user != nil) do
-      if(user.nickname == "hackerman" and user.email == "hackerman@email.com") do
+      if(user.email == "hackerman@email.com") do
         {:reply, {:admin}, state}
       else
         {:reply, {:ok}, state}
