@@ -14,16 +14,14 @@
   <body>
     <header>
       <section class="container">
-        <%= if(Plug.Conn.get_session(@conn, :user_logged_in) == "admin") do %>
         <nav role="navigation">
           <ul>
-            <li><a href="https://hexdocs.pm/phoenix/overview.html">Get Started</a></li>
-            <%= if function_exported?(Routes, :live_dashboard_path, 2) do %>
-              <li><%= link "LiveDashboard", to: Routes.live_dashboard_path(@conn, :home) %></li>
+            <%= if(Plug.Conn.get_session(@conn, :user_logged_in) == "admin") do %>
+              <li><a class="button button-primary center" href="/deploy-contract">Deploy Contract</a></li>
             <% end %>
+            <li><a class="button button-outline center" href="/logout">Logout</a></li>
           </ul>
         </nav>
-        <% end %>
         <a href="/" class="phx-logo">
           <img src="<%= Routes.static_path(@conn, "/images/logo.png") %>" alt="Phoenix Framework Logo"/>
         </a>

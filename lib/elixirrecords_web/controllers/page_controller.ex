@@ -21,6 +21,11 @@ defmodule ElixirrecordsWeb.PageController do
     end
   end 
 
+  def logout(conn, params) do
+    configure_session(conn, drop: true)
+    render(conn, "index.html")
+  end
+
   def signUp(conn, params) do
     if(Map.has_key?(params, "re_password")) do
       %{"nickname" => nickname, "email" => email, "password" => pass, "re_password" => repass} = params
@@ -61,13 +66,20 @@ defmodule ElixirrecordsWeb.PageController do
     end
   end
 
+  def deployContract(conn, params) do
+    res = Server.deploy()
+    case res do 
+      {:error, msg} ->
+        conn |> put_flash(:error, msg) |> render("index.html")
+      _ ->
+        events(conn, nil)
+    end
+  end
+
   def saveAssistance(conn, params) do
-    # TODO: This goes with admin
-    # Server.deploy()
     res = Server.sendTx(params["eventName"], get_session(conn, :user_logged_in))
 
     # TODO: render a popup with a "OK", or some feedback
-    events(conn, params)
+    events(conn, nil)
   end
-
 end
