@@ -40,19 +40,19 @@ defmodule Elixirrecords.Server do
   end
 
   def handle_call({:login, username, password}, _from, state) do
-    user = fetch_user(username, password)
-    if(user != nil) do
-      if(user.email == "hackerman@email.com") do
-        {:reply, {:admin}, state}
-      else
-        if(state == nil) do
-          {:reply, {:error, "Sorry, we can't find a smart contract, ask the admin to deploy one."}, state}
+    if(state == nil) do
+      {:reply, {:error, "Sorry, we can't find a smart contract, ask the admin to deploy one."}, state}
+    else
+      user = fetch_user(username, password)
+      if(user != nil) do
+        if(user.email == "hackerman@email.com") do
+          {:reply, {:admin}, state}
         else
           {:reply, {:ok}, state}
         end
+      else
+        {:reply, {:error, "Ups, we can't find you :("}, state}
       end
-    else
-      {:reply, {:error, "Ups, we can't find you :("}, state}
     end
   end
 
