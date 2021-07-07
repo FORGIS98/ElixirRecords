@@ -45,7 +45,11 @@ defmodule Elixirrecords.Server do
       if(user.email == "hackerman@email.com") do
         {:reply, {:admin}, state}
       else
-        {:reply, {:ok}, state}
+        if(state == nil) do
+          {:reply, {:error, "Sorry, we can't find a smart contract, ask the admin to deploy one."}, state}
+        else
+          {:reply, {:ok}, state}
+        end
       end
     else
       {:reply, {:error, "Ups, we can't find you :("}, state}
